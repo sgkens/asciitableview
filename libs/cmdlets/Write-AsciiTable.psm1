@@ -17,7 +17,7 @@
 
 .PARAMETER Format
 
-    A hashtable that specifies the format of the table.
+    A hashtable that specifies the format of the table. The keys are the properties of the input object and the values are the format strings.
 
 .PARAMETER NoHeader
 

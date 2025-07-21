@@ -1,5 +1,5 @@
 
-# AsciTableView
+# AsciiTableView
 
 ![license-badge][license-badge]
 
@@ -10,6 +10,7 @@ A simple powershell module to output objects as an ascii table.
 - Customize the table format.
 - customize the table color pallet.
 - Alias `watw` to output objects as an ascii table.
+- Mulitple themes.
 
 # Installation
 
@@ -39,9 +40,30 @@ Import-Module .\
 🔸 Parameters
 - `InputObject` - The input object to write to the table.
 - `Property` - The properties of the input object to include in the table.
-- `Format` - A hashtable that specifies the format of the table, e.g: `@{name = 'left', 'length' = 'right', 'baseName' = 'center'}`
+- `Format` - A hashtable that specifies the format of the table, properties passed and accessed via `$args` array e.g:
+  ```powershell
+  Name={
+    if($args -match 'libs') {csole -s $args[0] -c red}
+    else{$args[0]}
+  }; 
+  ```
 - `NoHeader` - Specifies that the table header should not be displayed.
 - `BorderStyle` - Specifies the style of the table border.
+  - `None` - No border.
+  - `Single` - Single border.
+  - `Double` - Double border.
+  - `Rounded` - Rounded border.
+  - `Minimal` - Minimal border.
+  - `Bold` - Bold border.
+  - `Dotted` - Dotted border.
+  - `Dashed` - Dashed border.
+  - `ASCII` - ASCII border.
+  - `Stars` - Stars border.
+  - `Block` - Block border.
+  - `LightBlock` - LightBlock border.
+  - `MediumBlock` - MediumBlock border.
+  - `DarkBlock` - DarkBlock border.
+  - `HeavyBlock` - HeavyBlock border.
 - `MaxWidth` - Specifies the maximum width of the table.
 - `TrimContent` - Specifies that the content of the table should be trimmed to fit the table width.
 - `Alignment` - Specifies the alignment of the table content.
@@ -65,65 +87,83 @@ Import-Module .\
 > 🦜 Note!
 > 
 
-**Examples:**
+#### **Examples:**
 
-🔹 Output psobject as an ascii table.
+🔹 Output with default format and colors
 
 ```powershell
-dir | Write-AsciiTable -Property Name, Length, BaseName
+Get-ChildItem | Write-AsciiTable -Property Name, Length, BaseName
 ```
 
-🔹 Output psobject as an ascii table with custom format.
+🔹 Output with custom colors
 
 ```powershell
-dir | Write-AsciiTable -Property Name, Length, BaseName -Format @{name = 'left', 'length' = 'right', 'baseName' = 'center'}
+Get-ChildItem | Write-AsciiTable -Property Name, Length, BaseName -colorPallet @{ connectors = "green"; HozLine = "yellow"; VerLine = "yellow"; juctions = "green" }
+
 ```
-🔹 Output psobject as an ascii table with custom format and color pallet.
+🔹 Output with custom colors and custom heading color
 
 ```powershell
-dir | Write-AsciiTable -Property Name, Length, BaseName -Format @{name = 'left', 'length' = 'right', 'baseName' = 'center'} -colorPallet @{ connectors = "green"; HozLine = "yellow"; VerLine = "yellow"; juctions = "green" }
-```
-
-🔹 Output psobject as an ascii table with custom alignment.
-
-```powershell
-dir | Write-AsciiTable -Property Name, Length, BaseName -Alignment @{Name = "right"; Length = "left"; BaseName = "center"}
+Get-ChildItem | Write-AsciiTable -Property Name, Length, BaseName `
+                                 -BorderStyle single `
+                                 -colorPallet @{ connectors = "cyan"; HozLine = "cyan"; VerLine = "cyan"; juctions = "cyan"; header = 'red'; row = 'blue' }
 ```
 
-🔹 Output psobject as an ascii table with custom alignment and color pallet.
+🔹 Output with custom border styles
 
 ```powershell
-dir | Write-AsciiTable -Property Name, Length, BaseName -Alignment @{Name = "right"; Length = "left"; BaseName = "center"} -colorPallet @{ connectors = "green"; HozLine = "yellow"; VerLine = "yellow"; juctions = "green" }
+Get-ChildItem | Write-AsciiTable -Property Name, Length, BaseName -BorderStyle Single
 ```
 
-🔹 Output psobject as an ascii table with custom border style.
-
-```powershell
-dir | Write-AsciiTable -Property Name, Length, BaseName -BorderStyle single
+```text
+┌─────────────────────┬────────┬────────────────┐
+│ Name                │ Length │ BaseName       │
+├─────────────────────┼────────┼────────────────┤
+│ libs                │ 1      │ libs           │
+│ tests               │ 1      │ tests          │
+│ asciitableview.psd1 │ 2434   │ asciitableview │
+│ asciitableview.psm1 │ 206    │ asciitableview │
+│ readme.md           │ 5138   │ readme         │
+└─────────────────────┴────────┴────────────────┘
 ```
 
-🔹 Output psobject as an ascii table with custom border style and color pallet.
+
+
+🔹 Output with custom alignment
 
 ```powershell
-dir | Write-AsciiTable -Property Name, Length, BaseName -BorderStyle single -colorPallet @{ connectors = "green"; HozLine = "yellow"; VerLine = "yellow"; juctions = "green" }
+Get-ChildItem | Write-AsciiTable -Property Name, Length, BaseName `
+                               -Alignment @{Name = "right"; Length = "left"; BaseName = "center"} `
+                               -BorderStyle single `
+                               -MaxWidth 100 `
+                               -TrimContent
 ```
 
-🔹 Output psobject as an ascii table with custom border style, max width and trim content.
-
-```powershell
-dir | Write-AsciiTable -Property Name, Length, BaseName -BorderStyle single -MaxWidth 50 -TrimContent
+```text
+┌─────────────────────┬────────┬────────────────┐
+│                Name │ Length │    BaseName    │
+├─────────────────────┼────────┼────────────────┤
+│                libs │ 1      │      libs      │
+│               tests │ 1      │     tests      │
+│ asciitableview.psd1 │ 2434   │ asciitableview │
+│ asciitableview.psm1 │ 206    │ asciitableview │
+│           readme.md │ 6367   │     readme     │
+└─────────────────────┴────────┴────────────────┘
 ```
 
-🔹 Output psobject as an ascii table with custom border style, max width, trim content and alignment.
+🔹 Output table with custom colors and format using property hook
 
 ```powershell
-dir | Write-AsciiTable -Property Name, Length, BaseName -BorderStyle single -MaxWidth 50 -TrimContent -Alignment @{Name = "left"; Length = "right"; BaseName = "center"}
-```
-
-🔹 Output psobject as an ascii table with custom border style, max width, trim content, alignment and color pallet.
-
-```powershell
-dir | Write-AsciiTable -Property Name, Length, BaseName -BorderStyle single -MaxWidth 50 -TrimContent -Alignment @{Name = "left"; Length = "right"; BaseName = "center"} -colorPallet @{ connectors = "green"; HozLine = "yellow"; VerLine = "yellow"; juctions = "green" }
+# Format the table with custom colors and format using a hashtable of scriptblocks with property names as the keys
+Get-ChildItem | Write-AsciiTable -Property Name, Length, BaseName `
+                                 -Format @{
+                                        Name={
+                                            if($args -match 'libs') {csole -s $args[0] -c red
+                                            }else{$args[0]}
+                                        }; 
+                                        Length={"$args"}; 
+                                        BaseName={$args}
+                                    }
 ```
 
 

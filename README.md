@@ -18,7 +18,7 @@ Module can be installed from the PowerShell Gallery or downloaded from GitHub.
 
 ### 📦 PowerShell Gallery
 ```powershell
-Install-Module -Name AsciTableView
+Install-Module -Name AsciiTableView
 ```
 ### 📦 GitHub
 ```powershell

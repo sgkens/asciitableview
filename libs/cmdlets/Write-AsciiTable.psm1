@@ -85,6 +85,9 @@ The default color pallet is:
 
     This example writes an ASCII table to the console using the Single border style, a maximum width of 50 characters, trimmed content, custom alignment, and custom color pallet.
 #>
+
+using module .\New-ColorConsole.psm1 
+
 function Write-AsciiTable {
     [CmdletBinding()]
     [OutputType([void])]
@@ -101,6 +104,12 @@ function Write-AsciiTable {
         
         [Parameter(Mandatory = $false)]
         [switch]$NoHeader,
+
+        [Parameter(Mandatory = $false)]
+        [string]$Title,
+
+        [Parameter(Mandatory = $false)]
+        [string]$SummaryTitle,
         
         [Parameter(Mandatory = $false)]
         [ValidateSet(
@@ -140,24 +149,28 @@ function Write-AsciiTable {
         if (!$colorPallet) {
             [hashtable]$colors = @{}
             # if param is not passed
-            $colors.header = 'white'
-            $colors.row = 'white'
-            $colors.connectors = 'gray'
-            $colors.HozLine = 'white'
-            $colors.VerLine = 'white'
-            $colors.juctions = 'gray'
+            $colors.header              = 'white'
+            $colors.row                 = 'white'
+            $colors.connectors          = 'gray'
+            $colors.hozline             = 'white'
+            $colors.verline             = 'white'
+            $colors.juctions            = 'gray'
+            $colors.title               = 'gray'
+            $colors.title_indicator     = 'cyan'
+            $colors.summary_title       = 'yellow'
         }else{
             # if param is passed but not all colors are defined
             [hashtable]$colors = $colorPallet
             if ($colors.ContainsKey('header') -eq $false) { $colors.header = 'white' }
             if ($colors.ContainsKey('row') -eq $false) { $colors.row = 'white' }
             if ($colors.ContainsKey('connectors') -eq $false) { $colors.connectors = 'gray' }
-            if ($colors.ContainsKey('HozLine') -eq $false) { $colors.HozLine = 'white' }
-            if ($colors.ContainsKey('VerLine') -eq $false) { $colors.VerLine = 'white' }
+            if ($colors.ContainsKey('hozline') -eq $false) { $colors.hozline = 'white' }
+            if ($colors.ContainsKey('verline') -eq $false) { $colors.VerLine = 'white' }
             if ($colors.ContainsKey('juctions') -eq $false) { $colors.juctions = 'gray' }
+            if ($colors.ContainsKey('title') -eq $false) { $colors.title = 'gray' }
+            if ($colors.ContainsKey('title_indicator') -eq $false) { $colors.title_indicator = 'cyan' }
+            if ($colors.ContainsKey('summary_title') -eq $false) { $colors.summary_title = 'yellow' } 
         }
-
-
 
         # Border style definitions
         # Border style definitions with console coloring support
@@ -174,6 +187,7 @@ function Write-AsciiTable {
                 LeftJunction   = "$(csole -s "+" -c $colors.juctions)";
                 RightJunction  = "$(csole -s "+" -c $colors.juctions)";
                 CrossJunction  = "$(csole -s "+" -c $colors.juctions)";
+                titleIndicator = "$(csole -s "⇉" -c $colors.title_indicator)";
             }
             Single = @{
                 TopLeft        = "$(csole -s "┌" -c $colors.connectors)";
@@ -187,6 +201,7 @@ function Write-AsciiTable {
                 LeftJunction   = "$(csole -s "├" -c $colors.juctions)";
                 RightJunction  = "$(csole -s "┤" -c $colors.juctions)";
                 CrossJunction  = "$(csole -s "┼" -c $colors.juctions)";
+                titleIndicator = "$(csole -s "⬡" -c $colors.title_indicator)";
             }
             Double = @{
                 TopLeft        = "$(csole -s "╔" -c $colors.connectors)";
@@ -200,6 +215,7 @@ function Write-AsciiTable {
                 LeftJunction   = "$(csole -s "╠" -c $colors.juctions)";
                 RightJunction  = "$(csole -s "╣" -c $colors.juctions)";
                 CrossJunction  = "$(csole -s "╬" -c $colors.juctions)";
+                titleIndicator = "$(csole -s "⬡" -c $colors.title_indicator)";
             }
             Rounded = @{
                 TopLeft        = "$(csole -s "╭" -c $colors.connectors)";
@@ -213,6 +229,7 @@ function Write-AsciiTable {
                 LeftJunction   = "$(csole -s "├" -c $colors.juctions)";
                 RightJunction  = "$(csole -s "┤" -c $colors.juctions)";
                 CrossJunction  = "$(csole -s "┼" -c $colors.juctions)";
+                titleIndicator = "$(csole -s "⬡" -c $colors.title_indicator)";
             }
             Minimal = @{
                 TopLeft        = "$(csole -s " " -c $colors.connectors)";
@@ -226,6 +243,7 @@ function Write-AsciiTable {
                 LeftJunction   = "$(csole -s "│" -c $colors.juctions)";
                 RightJunction  = "$(csole -s "│" -c $colors.juctions)";
                 CrossJunction  = "$(csole -s "│" -c $colors.juctions)";
+                titleIndicator = "$(csole -s "⬡" -c $colors.title_indicator)";
             }
             Bold = @{
                 TopLeft        = "$(csole -s "┏" -c $colors.connectors)";
@@ -239,6 +257,7 @@ function Write-AsciiTable {
                 LeftJunction   = "$(csole -s "┣" -c $colors.juctions)";
                 RightJunction  = "$(csole -s "┫" -c $colors.juctions)";
                 CrossJunction  = "$(csole -s "╋" -c $colors.juctions)";
+                titleIndicator = "$(csole -s "⬡" -c $colors.title_indicator)";
             }
             Dotted = @{
                 TopLeft        = "$(csole -s "┌" -c $colors.connectors)";
@@ -252,6 +271,7 @@ function Write-AsciiTable {
                 LeftJunction   = "$(csole -s "├" -c $colors.juctions)";
                 RightJunction  = "$(csole -s "┤" -c $colors.juctions)";
                 CrossJunction  = "$(csole -s "┼" -c $colors.juctions)";
+                titleIndicator = "$(csole -s "⬡" -c $colors.title_indicator)";
             }
             Dashed = @{
                 TopLeft        = "$(csole -s "┌" -c $colors.connectors)";
@@ -265,6 +285,7 @@ function Write-AsciiTable {
                 LeftJunction   = "$(csole -s "├" -c $colors.juctions)";
                 RightJunction  = "$(csole -s "┤" -c $colors.juctions)";
                 CrossJunction  = "$(csole -s "┼" -c $colors.juctions)";
+                titleIndicator = "$(csole -s "⬡" -c $colors.title_indicator)";
             }
             ASCII = @{
                 TopLeft        = "$(csole -s "/" -c $colors.connectors)";
@@ -278,6 +299,7 @@ function Write-AsciiTable {
                 LeftJunction   = "$(csole -s ">" -c $colors.juctions)";
                 RightJunction  = "$(csole -s "<" -c $colors.juctions)";
                 CrossJunction  = "$(csole -s "+" -c $colors.juctions)";
+                titleIndicator = "$(csole -s "⬡" -c $colors.title_indicator)";
             }
             Stars = @{
                 TopLeft        = "$(csole -s "*" -c $colors.connectors)";
@@ -291,6 +313,7 @@ function Write-AsciiTable {
                 LeftJunction   = "$(csole -s "*" -c $colors.juctions)";
                 RightJunction  = "$(csole -s "*" -c $colors.juctions)";
                 CrossJunction  = "$(csole -s "*" -c $colors.juctions)";
+                titleIndicator = "$(csole -s "⬡" -c $colors.title_indicator)";
             }
             Block = @{
                 TopLeft        = "$(csole -s "█" -c $colors.connectors)";
@@ -304,6 +327,7 @@ function Write-AsciiTable {
                 LeftJunction   = "$(csole -s "█" -c $colors.juctions)";
                 RightJunction  = "$(csole -s "█" -c $colors.juctions)";
                 CrossJunction  = "$(csole -s "█" -c $colors.juctions)";
+                titleIndicator = "$(csole -s "⬡" -c $colors.title_indicator)";
             }
             LightBlock = @{
                 TopLeft        = "$(csole -s "▓" -c $colors.connectors)";
@@ -317,6 +341,7 @@ function Write-AsciiTable {
                 LeftJunction   = "$(csole -s "▓" -c $colors.juctions)";
                 RightJunction  = "$(csole -s "▓" -c $colors.juctions)";
                 CrossJunction  = "$(csole -s "▓" -c $colors.juctions)";
+                titleIndicator = "$(csole -s "⬡" -c $colors.title_indicator)";
             }
             MediumBlock = @{
                 TopLeft        = "$(csole -s "▒" -c $colors.connectors)";
@@ -330,30 +355,35 @@ function Write-AsciiTable {
                 LeftJunction   = "$(csole -s "▒" -c $colors.juctions)";
                 RightJunction  = "$(csole -s "▒" -c $colors.juctions)";
                 CrossJunction  = "$(csole -s "▒" -c $colors.juctions)";
+                titleIndicator = "$(csole -s "⬡" -c $colors.title_indicator)";
             }
             DarkBlock = @{
-                TopLeft = "$(csole -s "░" -c $colors.connectors)";
-                TopRight = "$(csole -s "░" -c $colors.connectors)";
-                BottomLeft = "$(csole -s "░" -c $colors.connectors)";
-                BottomRight = "$(csole -s "░" -c $colors.connectors)";
-                HorizontalLine = "$(csole -s "░" -c $colors.HozLine)";
-                VerticalLine = "$(csole -s "░" -c $colors.VerLine)";
-                TopJunction = "$(csole -s "░" -c $colors.juctions)";
-                BottomJunction = "$(csole -s "░" -c $colors.juctions)";
-                LeftJunction = "$(csole -s "░" -c $colors.juctions)";
-                RightJunction = "$(csole -s "░" -c $colors.juctions)";
+                TopLeft         = "$(csole -s "░" -c $colors.connectors)";
+                TopRight        = "$(csole -s "░" -c $colors.connectors)";
+                BottomLeft      = "$(csole -s "░" -c $colors.connectors)";
+                BottomRight     = "$(csole -s "░" -c $colors.connectors)";
+                HorizontalLine  = "$(csole -s "░" -c $colors.HozLine)";
+                VerticalLine    = "$(csole -s "░" -c $colors.VerLine)";
+                TopJunction     = "$(csole -s "░" -c $colors.juctions)";
+                BottomJunction  = "$(csole -s "░" -c $colors.juctions)";
+                LeftJunction    = "$(csole -s "░" -c $colors.juctions)";
+                RightJunction   = "$(csole -s "░" -c $colors.juctions)";
+                CrossJunction   = "$(csole -s "░" -c $colors.juctions)";
+                titleIndicator  = "$(csole -s "⬡" -c $colors.title_indicator)";
             }
             HeavyBlock = @{
-                TopLeft = "$(csole -s "█" -c $colors.connectors)";
-                TopRight = "$(csole -s "█" -c $colors.connectors)";
-                BottomLeft = "$(csole -s "█" -c $colors.connectors)";
-                BottomRight = "$(csole -s "█" -c $colors.connectors)";
-                HorizontalLine = "$(csole -s "█" -c $colors.HozLine)";
-                VerticalLine = "$(csole -s "█" -c $colors.VerLine)";
-                TopJunction = "$(csole -s "█" -c $colors.juctions)";
-                BottomJunction = "$(csole -s "█" -c $colors.juctions)";
-                LeftJunction = "$(csole -s "█" -c $colors.juctions)";
-                RightJunction = "$(csole -s "█" -c $colors.juctions)";
+                TopLeft         = "$(csole -s "█" -c $colors.connectors)";
+                TopRight        = "$(csole -s "█" -c $colors.connectors)";
+                BottomLeft      = "$(csole -s "█" -c $colors.connectors)";
+                BottomRight     = "$(csole -s "█" -c $colors.connectors)";
+                HorizontalLine  = "$(csole -s "█" -c $colors.HozLine)";
+                VerticalLine    = "$(csole -s "█" -c $colors.VerLine)";
+                TopJunction     = "$(csole -s "█" -c $colors.juctions)";
+                BottomJunction  = "$(csole -s "█" -c $colors.juctions)";
+                LeftJunction    = "$(csole -s "█" -c $colors.juctions)";
+                RightJunction   = "$(csole -s "█" -c $colors.juctions)";
+                CrossJunction   = "$(csole -s "█" -c $colors.juctions)";
+                titleIndicator  = "$(csole -s "⬡" -c $colors.title_indicator)";
             }
         }
         
@@ -422,7 +452,7 @@ function Write-AsciiTable {
             $result += $Right
             return $result
         }
-        
+
         # Top border
         $topLine = Get-HorizontalLine -Left $borders.TopLeft -Middle $borders.HorizontalLine -Right $borders.TopRight -Line $borders.HorizontalLine -Junction $borders.TopJunction
         
@@ -432,7 +462,22 @@ function Write-AsciiTable {
         # Bottom border
         $bottomLine = Get-HorizontalLine -Left $borders.BottomLeft -Middle $borders.HorizontalLine -Right $borders.BottomRight -Line $borders.HorizontalLine -Junction $borders.BottomJunction
         
-        # Output table
+        # title Border
+        $titleLine = Get-HorizontalLine -Left $borders.TopLeft -Middle $borders.HorizontalLine -Right $borders.TopRight -Line $borders.HorizontalLine -Junction $borders.TopJunction
+
+        # input object items arrays
+        $ObjectCount = $items.Count
+        if($title){
+            # title string
+            $titleString = "  $(csole -s "⬡" -c $($colors.title_indicator)) $(csole -s "$($title.ToUpper())" -c $($colors.title))"
+            
+            if($SummaryTitle){
+                $titleString += "  $(csole -s "⬡" -c $($colors.title_indicator)) $(csole -s "$($SummaryTitle.ToUpper())" -c $($colors.summary_title)) $(csole -s "$ObjectCount" -color $($colors.title))"
+            }
+            # Output table
+            $titleLine
+            $titleString
+        }
         $topLine
         
         # Header row
@@ -460,7 +505,7 @@ function Write-AsciiTable {
                     default { $headerText = $headerText.PadRight($columnWidths[$prop]) }
                 }
                 
-                $headerRow += " " + "$(csole -s $headerText -c $colors.header)" + " " + $borders.VerticalLine
+                $headerRow += " " + "$(csole -s $headerText -c $colors.header -format italic)" + " " + $borders.VerticalLine
             }
             $headerRow
             $middleLine

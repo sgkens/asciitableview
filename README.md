@@ -68,7 +68,16 @@ Import-Module .\
 - `TrimContent` - Specifies that the content of the table should be trimmed to fit the table width.
 - `Alignment` - Specifies the alignment of the table content.
 - `ColorPallet` - Specifies the color pallet of the table.
-
+  - `<hashtable>`:
+    - `connectors` - Specifies the color of the table connectors.
+    - `header` - Specifies the color of the table header.
+    - `HozLine` - Specifies the color of the table horizontal lines.
+    - `VerLine` - Specifies the color of the table vertical lines.
+    - `juctions` - Specifies the color of the table juctions.
+    - `title` - Specifies the color of the table title.
+    - `SummaryTitle` - Specifies the color of the table summary title.
+- `Title` - Specifies the title of the table.
+- `SummaryTitle` - Specifies the summary title of the table.
 
 **Example Output:**
 
@@ -127,7 +136,16 @@ Get-ChildItem | Write-AsciiTable -Property Name, Length, BaseName -BorderStyle S
 └─────────────────────┴────────┴────────────────┘
 ```
 
+🔹 Output with With Title and Summary
 
+> SummaryTitle Returns the number of items in addition to the title and SummaryTitle
+
+```powershell
+Get-ChildItem | Write-AsciiTable -Property Name, Length, BaseName `
+                                 -Title "My Table" `
+                                 -SummaryTitle "Summary" `
+                                 -BorderStyle single
+```
 
 🔹 Output with custom alignment
 
